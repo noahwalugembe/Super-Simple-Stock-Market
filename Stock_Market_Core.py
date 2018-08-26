@@ -20,7 +20,7 @@ class Core:
 
 	#_test_data = None
 	#_version = "1.0.0.1"
-	#_data = {}
+	_data = {}
 
 
 	def __init__(self,stock,quantity,strflow,price,minutes):
@@ -118,36 +118,37 @@ class Core:
 		
 		timestamp = datetime.now()
 		ele = {}
-		if stock not in StockMarket._data:
-			StockMarket._data[stock] = []
+		if stock not in Core._data:
+			Core._data[stock] = []
 		ele[timestamp] =  {"quantity":quantity, "flow":self.flow, "price":price}
-		StockMarket._data[stock].append(ele)
+		Core._data[stock].append(ele)
 		
 
 	#
 	# Records past <interval> minutes
 	#	
 	def get_past_interval(self, stock, interval):
-		if not stock in StockMarket._data:
+		if not stock in Core._data:
 			return []
 		minutes = timedelta(minutes=interval)	
 		min_time = datetime.now() - minutes
 		# stock data
-		stk_vals = list({k:v for k,v in StockMarket._data.items() if k == stock}.values())[0]
+		stk_vals = list({k:v for k,v in Core._data.items() if k == stock}.values())[0]
 		# selected keys
 		result = [list(tm.keys())[0] for tm in stk_vals if list(tm.keys())[0] > min_time]
 
 		return result	
+	
 
 	def volume_weighted_stock_price(self, stock, interval):
-		if StockMarket._data == {}:
+		if Core._data == {}:
 			return None
-		if not stock in StockMarket._data:
+		if not stock in Core._data:
 			return None 
 		# get selected trades
 		sel_trades = self.get_past_interval(stock, interval)
 		# stock data
-		stk_vals = list({k:v for k,v in StockMarket._data.items() if k == stock}.values())[0]
+		stk_vals = list({k:v for k,v in Core._data.items() if k == stock}.values())[0]
 		# convert to dict
 		d_stk_vals = {list(item.keys())[0]:list(item.values())[0] for item in stk_vals}
 		# get sub set of _data building a list
@@ -157,9 +158,9 @@ class Core:
 		return volume
 
 	def GBCE(self, interval):
-		if StockMarket._data == {}:
+		if Core._data == {}:
 			return 0 
-		stocks = set(StockMarket._data.keys())
+		stocks = set(Core._data.keys())
 		n = len(stocks)
 		p = None
 		for st in stocks:
@@ -171,40 +172,4 @@ class Core:
 			return math.pow(p, 1/n)
 		else:
 			return 0
-
-
-#StockMarket = Core('ALE',100)
-
-StockMarket = Core('ALE',1,"BUY",100,5)
-
-print (StockMarket._test_data)
-
-
-#Given any price as input, calculate the dividend yield
-dy = StockMarket.dividend_yeld(StockMarket.stock, float(StockMarket.price))
-print (dy)
-
-
-#Given any price as input, calculate the P/E Ratio
-pe = StockMarket.pe_ratio(StockMarket.stock, float(StockMarket.price))
-print (pe)
-
-
-#Record a trade, with timestamp, quantity, buy or sell indicator and price
-
-
-StockMarket.record_trade(StockMarket.stock, StockMarket.quantity, StockMarket.strflow,StockMarket.price)
-	
-print (StockMarket._data)
-		
-#Calculate Volume Weighted Stock Price based on trades in past 5 minutes
-
-volume = StockMarket.volume_weighted_stock_price(StockMarket.stock, int(StockMarket.minutes))
-
-print (volume)
-
-#Calculate the GBCE All Share Index using the geometric mean of the Volume Weighted Stock Price for all stocks
-gmean = StockMarket.GBCE(int(StockMarket.minutes))
-
-print (gmean)
 

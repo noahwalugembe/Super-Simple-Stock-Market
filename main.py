@@ -1,5 +1,6 @@
 
 from Stock_Market_Core import   Core
+#from Stock_Market_Core.Core import dividend_yeld
 
 #StockMarket = Core('ALE',100)
 
@@ -20,9 +21,17 @@ print (pe)
 
 #Record a trade, with timestamp, quantity, buy or sell indicator and price
 
-StockMarket.record_trade(StockMarket.stock, StockMarket.quantity, StockMarket.strflow,StockMarket.price)
+
+_data=StockMarket.record_trade(StockMarket.stock, StockMarket.quantity, StockMarket.strflow,StockMarket.price)
 	
-print (StockMarket._data)
+print (Core._data)
+
+
+#Record interval
+inter=StockMarket.get_past_interval( StockMarket.stock, 5)
+print (inter)
+
+
 		
 #Calculate Volume Weighted Stock Price based on trades in past 5 minutes
 
@@ -30,8 +39,8 @@ volume = StockMarket.volume_weighted_stock_price(StockMarket.stock, int(StockMar
 
 print (volume)
 
+
 #Calculate the GBCE All Share Index using the geometric mean of the Volume Weighted Stock Price for all stocks
 gmean = StockMarket.GBCE(int(StockMarket.minutes))
 
 print (gmean)
-
